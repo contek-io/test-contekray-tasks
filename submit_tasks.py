@@ -24,6 +24,7 @@ with open("task.yaml.j2", "r") as f:
 
 
 def main(dry_run: bool = False):
+    shutil.rmtree("configs", ignore_errors=True)
     os.makedirs("configs", exist_ok=True)
     shutil.rmtree("output", ignore_errors=True)
     os.makedirs("output", exist_ok=True)
