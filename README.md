@@ -2,7 +2,7 @@
 
 A script to submit a contekray task and write/read cephfs on each node.
 
-NOTE: make sure you are on a path that you want to test. For example, if you want to test `/cephfs`, you should log on to a gate node (e.g. researchhub-1) and run the following commands under `/cephfs/<username>/`.
+NOTE: make sure you are on a path that you want to test. For example, if you want to test `/cephfs`, you should log on to a gate node (e.g. researchhub-1) and run the following commands under `/cephfs/<username>/`. This makes sure that you have the correct permissions.
 
 ```
 python3.11 -m venv .venv
