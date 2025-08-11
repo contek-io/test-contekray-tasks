@@ -1,0 +1,19 @@
+task:
+  name: test-on-{{ node }}
+  working_dir: {{ working_dir }}
+  runtime_env:
+    pip:
+  exclude_dirs:
+  - .venv
+  working_dir_type: cephfs
+  retry: 0
+  entrypoint: python test_cephfs_io.py {{ node }}
+resources:
+  replicas: 1
+  cpu: 2
+  memory: 4Gi
+image: latest
+exclude_nodes:
+{% for e in exclude_nodes %}
+- {{ e }}
+{% endfor %}
