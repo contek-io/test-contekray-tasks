@@ -7,6 +7,8 @@ import jinja2
 
 
 nodes = {
+    "ceph-3.szidc",
+    "ceph-4.szidc",
     "researchhub-1.szidc",
     "researchhub-2.szidc",
     "researchhub-3.szidc",
@@ -15,26 +17,28 @@ nodes = {
     "researchhub-6.szidc",
     "researchhub-7.szidc",
     "researchhub-8.szidc",
-    "ceph-3.szidc",
-    "ceph-4.szidc",
+    "researchhub-9.szidc",
 }
+
 env = jinja2.Environment()
 with open("task.yaml.j2", "r") as f:
     template = env.from_string(f.read())
 
 
-def main(dry_run: bool = False):
+def main(dry_run: bool = False, working_dir:str = ""):
     shutil.rmtree("configs", ignore_errors=True)
     os.makedirs("configs", exist_ok=True)
     shutil.rmtree("output", ignore_errors=True)
     os.makedirs("output", exist_ok=True)
-    for node in nodes:
-        exclude_nodes = nodes.copy()
-        exclude_nodes.remove(node)
+
+    if not working_dir:
         working_dir = os.path.realpath(".")
+    for node in nodes:
+        exclude_nodes = nodes - {node}
         conf = template.render(node=node, exclude_nodes=exclude_nodes, working_dir=working_dir)
         with open(os.path.join("configs", f"task-{node}.yaml"), "w") as f:
             f.write(conf)
+
     if not dry_run:
         for node in nodes:
             subprocess.run(f"contekray task create configs/task-{node}.yaml", shell=True)
