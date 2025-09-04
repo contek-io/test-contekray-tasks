@@ -6,7 +6,7 @@ task:
   exclude_dirs:
   - .venv
   working_dir_type: cephfs
-  retry: 0
+  retry: {{ retry }}
   entrypoint: python test_cephfs_io.py {{ node }} {{ working_dir }}
 resources:
   replicas: 1

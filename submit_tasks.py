@@ -25,7 +25,7 @@ with open("task.yaml.j2", "r") as f:
     template = env.from_string(f.read())
 
 
-def main(dry_run: bool = False, working_dir:str = ""):
+def main(dry_run: bool = False, working_dir:str = "", retry:int=0):
     shutil.rmtree("configs", ignore_errors=True)
     os.makedirs("configs", exist_ok=True)
     shutil.rmtree("output", ignore_errors=True)
@@ -35,7 +35,7 @@ def main(dry_run: bool = False, working_dir:str = ""):
         working_dir = os.path.realpath(".")
     for node in nodes:
         exclude_nodes = nodes - {node}
-        conf = template.render(node=node, exclude_nodes=exclude_nodes, working_dir=working_dir)
+        conf = template.render(node=node, exclude_nodes=exclude_nodes, working_dir=working_dir, retry=retry)
         with open(os.path.join("configs", f"task-{node}.yaml"), "w") as f:
             f.write(conf)
 
