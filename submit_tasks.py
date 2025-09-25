@@ -25,7 +25,7 @@ with open("task.yaml.j2", "r") as f:
     template = env.from_string(f.read())
 
 
-def main(dry_run: bool = False, working_dir:str = "", retry:int=0):
+def main(dry_run: bool = False, working_dir:str = "", retry:int=0, run_nodes:str = "", name_prefix:str = "test"):
     shutil.rmtree("configs", ignore_errors=True)
     os.makedirs("configs", exist_ok=True)
     shutil.rmtree("output", ignore_errors=True)
@@ -35,13 +35,25 @@ def main(dry_run: bool = False, working_dir:str = "", retry:int=0):
         working_dir = os.path.realpath(".")
     for node in nodes:
         exclude_nodes = nodes - {node}
-        conf = template.render(node=node, exclude_nodes=exclude_nodes, working_dir=working_dir, retry=retry)
+        conf = template.render(
+            node=node,
+            exclude_nodes=exclude_nodes,
+            working_dir=working_dir,
+            retry=retry,
+            name_prefix=name_prefix
+        )
         with open(os.path.join("configs", f"task-{node}.yaml"), "w") as f:
             f.write(conf)
 
     if not dry_run:
-        for node in nodes:
-            subprocess.run(f"contekray task create configs/task-{node}.yaml", shell=True)
+        node_list = run_nodes.split(',')
+        node_list = [i.strip() for i in node_list if i.strip()]
+        if not node_list:
+            node_list = list(nodes)
+        for node in node_list:
+            cmd = f"contekray task create configs/task-{node}.yaml"
+            print("Runing", cmd)
+            subprocess.run(cmd, shell=True)
 
 
 if __name__ == "__main__":

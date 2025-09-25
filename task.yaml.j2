@@ -1,5 +1,5 @@
 task:
-  name: test-on-{{ node }}
+  name: {{name_prefix}}-{{ node }}
   working_dir: {{ working_dir }}
   runtime_env:
     pip:
@@ -13,6 +13,11 @@ resources:
   cpu: 2
   memory: 4Gi
 image: latest
+tolerations:
+- key: status
+  operator: "Equal"
+  value: "PendingAcceptance"
+  effect: "NoSchedule"
 exclude_nodes:{% for e in exclude_nodes %}
   - {{ e }}
 {%- endfor %}
