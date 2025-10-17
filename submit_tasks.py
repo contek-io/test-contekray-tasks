@@ -18,6 +18,8 @@ nodes = {
     "researchhub-7.szidc",
     "researchhub-8.szidc",
     "researchhub-9.szidc",
+    "researchhub-10.szidc",
+    "researchhub-11.szidc",
 }
 
 env = jinja2.Environment()
