@@ -6,6 +6,7 @@ import fire
 import jinja2
 
 
+# 节点列表
 nodes = {
     "ceph-3.szidc",
     "ceph-4.szidc",
@@ -17,6 +18,16 @@ nodes = {
     "researchhub-6.szidc",
     "researchhub-7.szidc",
     "researchhub-8.szidc",
+    "researchhub-9.szidc",
+    "researchhub-10.szidc",
+    "researchhub-11.szidc",
+}
+
+# 包含GPU需要尝试申请GPU资源
+gpu_node = {
+    "researchhub-5.szidc",
+    "researchhub-6.szidc",
+    "researchhub-7.szidc",
     "researchhub-9.szidc",
     "researchhub-10.szidc",
     "researchhub-11.szidc",
@@ -36,11 +47,16 @@ def main(dry_run: bool = False, working_dir:str = "", retry:int=0, run_nodes:str
     if not working_dir:
         working_dir = os.path.realpath(".")
     for node in nodes:
+        if node in gpu_node:
+            num_gpus = 1
+        else:
+            num_gpus = 0
         exclude_nodes = nodes - {node}
         conf = template.render(
             node=node,
             exclude_nodes=exclude_nodes,
             working_dir=working_dir,
+            num_gpus=num_gpus,
             retry=retry,
             name_prefix=name_prefix
         )

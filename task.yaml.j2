@@ -12,6 +12,7 @@ resources:
   replicas: 1
   cpu: 2
   memory: 4Gi
+  num_gpus: {{ num_gpus }}
 image: latest
 tolerations:
 - key: status
