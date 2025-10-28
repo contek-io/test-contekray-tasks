@@ -21,6 +21,7 @@ nodes = {
     "researchhub-9.szidc",
     "researchhub-10.szidc",
     "researchhub-11.szidc",
+    "researchhub-12.szidc",
 }
 
 # 包含GPU需要尝试申请GPU资源
