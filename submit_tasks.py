@@ -40,39 +40,41 @@ with open("task.yaml.j2", "r") as f:
 
 
 def main(dry_run: bool = False, working_dir:str = "", retry:int=0, run_nodes:str = "", name_prefix:str = "test"):
+    # 准备目录
     shutil.rmtree("configs", ignore_errors=True)
     os.makedirs("configs", exist_ok=True)
     shutil.rmtree("output", ignore_errors=True)
     os.makedirs("output", exist_ok=True)
-
     if not working_dir:
         working_dir = os.path.realpath(".")
-    for node in nodes:
-        if node in gpu_node:
-            num_gpus = 1
-        else:
-            num_gpus = 0
-        exclude_nodes = nodes - {node}
-        conf = template.render(
-            node=node,
-            exclude_nodes=exclude_nodes,
-            working_dir=working_dir,
-            num_gpus=num_gpus,
-            retry=retry,
-            name_prefix=name_prefix
-        )
-        with open(os.path.join("configs", f"task-{node}.yaml"), "w") as f:
-            f.write(conf)
+    # 节点参数
+    node_list = run_nodes.split(',')
+    node_list = [i.strip() for i in node_list if i.strip()]
+    if not node_list:
+        node_list = list(nodes)
+        
+    for node in node_list:
+        # GPU资源测试
+        for num_gpus in [0, 1]:
+            if num_gpus > 0 and node not in gpu_node:
+                # 机器无GPU
+                continue
+            exclude_nodes = nodes - {node}
+            conf = template.render(
+                node=node,
+                exclude_nodes=exclude_nodes,
+                working_dir=working_dir,
+                num_gpus=num_gpus,
+                retry=retry,
+                name_prefix=name_prefix
+            )
+            with open(os.path.join("configs", f"task-{node}-{num_gpus}.yaml"), "w") as f:
+                f.write(conf)
 
-    if not dry_run:
-        node_list = run_nodes.split(',')
-        node_list = [i.strip() for i in node_list if i.strip()]
-        if not node_list:
-            node_list = list(nodes)
-        for node in node_list:
-            cmd = f"contekray task create configs/task-{node}.yaml"
-            print("Runing", cmd)
-            subprocess.run(cmd, shell=True)
+            if not dry_run:
+                cmd = f"contekray task create configs/task-{node}-{num_gpus}.yaml"
+                print("Runing", cmd)
+                subprocess.run(cmd, shell=True)
 
 
 if __name__ == "__main__":
